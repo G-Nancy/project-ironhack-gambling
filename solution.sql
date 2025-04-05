@@ -119,3 +119,40 @@ group by betting.AccountNo, ClassId,CategoryId, Product
 ) as a
 where rn = 1
 order by AccountNo,amt desc;
+
+use ih_gambling;
+select * from betting
+order by accountNo desc
+limit 100;
+
+select * from betting
+where AccountNo = '01196ZZ   ' or `AccountNo_[0]` = '01196ZZ   ' or `AccountNo_[1]`='01196ZZ   '
+order by accountNo desc;
+
+select * from product 
+where 
+-- bet_or_play = 0
+product = 'Vegas'
+limit 100;
+
+select AccountNo, Product, sum(Bet_Amt)
+ from betting
+where AccountNo = '01196ZZ   ' -- or `AccountNo_[0]` = '01196ZZ   ' or `AccountNo_[1]`='01196ZZ   '
+group by AccountNo, Product
+order by accountNo desc; -- 89960.70000000001, 43708
+
+select * 
+from betting;
+
+select * from (
+select `AccountNo_[0]`, count(distinct AccountNo),count(distinct concat(ClassId,CategoryId)) as prds, sum(Bet_Amt) as sum, 'shared' as flag
+from betting
+where `AccountNo_[0]`!=AccountNo
+group by `AccountNo_[0]`
+union
+select `AccountNo_[0]`, count(distinct AccountNo), count(distinct concat(ClassId,CategoryId)) as prds, sum(Bet_Amt) as sum, 'individual' as flag
+from betting
+where `AccountNo_[0]`=AccountNo
+group by `AccountNo_[0]`
+) x 
+order by `AccountNo_[0]` , sum asc;
